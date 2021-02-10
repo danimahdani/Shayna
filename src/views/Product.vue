@@ -51,7 +51,9 @@
                                     <h4>${{ productDetails.price }}</h4>
                                 </div>
                                 <div class="quantity">
-                                    <router-link to="/cart" class="primary-btn pd-cart">Add To Cart</router-link>
+                                    <a href="#"
+                                       @click="saveKeranjang(productDetails.id)"
+                                       class="primary-btn pd-cart">Add To Cart</a>
                                 </div>
                             </div>
                         </div>
@@ -88,13 +90,8 @@ export default {
   data() {
     return {
       gambar_default: "",
-      thumbs : [
-        "img/mickey1.jpg",
-        "img/mickey2.jpg",
-        "img/mickey3.jpg",
-        "img/mickey4.jpg"
-      ],
       productDetails: [],
+      keranjangaUser: [],
     }
   },
   methods: {
@@ -105,9 +102,21 @@ export default {
         this.productDetails = data;
         // console.log(this.productDetails);
         this.gambar_default = data.galleries[0].photo;
+    },
+    saveKeranjang(idProduct) {
+        this.keranjangaUser.push(idProduct);
+        const parsed = JSON.stringify(this.keranjangaUser);
+        localStorage.setItem('keranjangaUser', parsed);
     }
   },
     mounted() {
+        if (localStorage.getItem('keranjangaUser')) {
+            try {
+                this.cats = JSON.parse(localStorage.getItem('keranjangaUser'));
+            } catch(e) {
+                localStorage.removeItem('keranjangaUser');
+            }
+        }
         axios
         .get("http://shayna-backend.belajarkoding.com/api/products", {
             params: {
