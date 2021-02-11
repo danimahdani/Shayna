@@ -51,9 +51,11 @@
                                     <h4>${{ productDetails.price }}</h4>
                                 </div>
                                 <div class="quantity">
+                                    <router-link to="/cart">
                                     <a href="#"
-                                       @click="saveKeranjang(productDetails.id)"
+                                       @click="saveKeranjang(productDetails.id, productDetails.name, productDetails.price, productDetails.galleries[0].photo)"
                                        class="primary-btn pd-cart">Add To Cart</a>
+                                    </router-link>
                                 </div>
                             </div>
                         </div>
@@ -91,7 +93,7 @@ export default {
     return {
       gambar_default: "",
       productDetails: [],
-      keranjangaUser: [],
+      keranjangUser: [],
     }
   },
   methods: {
@@ -103,18 +105,26 @@ export default {
         // console.log(this.productDetails);
         this.gambar_default = data.galleries[0].photo;
     },
-    saveKeranjang(idProduct) {
-        this.keranjangaUser.push(idProduct);
-        const parsed = JSON.stringify(this.keranjangaUser);
-        localStorage.setItem('keranjangaUser', parsed);
+    saveKeranjang(idProduct,productName,productPrice,productPhoto) {
+
+        let ProductStore = {
+            'id': idProduct,
+            'name': productName,
+            'price': productPrice,
+            'photo': productPhoto,
+        }
+
+        this.keranjangUser.push(ProductStore);
+        const parsed = JSON.stringify(this.keranjangUser);
+        localStorage.setItem('keranjangUser', parsed);
     }
   },
     mounted() {
-        if (localStorage.getItem('keranjangaUser')) {
+        if (localStorage.getItem('keranjangUser')) {
             try {
-                this.cats = JSON.parse(localStorage.getItem('keranjangaUser'));
+                this.keranjangUser = JSON.parse(localStorage.getItem('keranjangUser'));
             } catch(e) {
-                localStorage.removeItem('keranjangaUser');
+                localStorage.removeItem('keranjangUser');
             }
         }
         axios

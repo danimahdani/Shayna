@@ -9,11 +9,12 @@
                             <div class="pi-pic">
                                 <img :src="itemProduct.galleries[0].photo" alt="" />
                                 <ul>
-                                    <li class="w-icon active">
+                                    <li @click="saveKeranjang(itemProduct.id, itemProduct.name, itemProduct.price, itemProduct.galleries[0].photo)" class="w-icon active">
                                         <a href="#"><i class="icon_bag_alt"></i></a>
                                     </li>
                                     <li class="quick-view">
-                                        <router-link :to="'/product/'+itemProduct.id">+ Quick View</router-link></li>
+                                        <router-link :to="'/product/'+itemProduct.id">+ Quick View</router-link>
+                                    </li>
                                 </ul>
                             </div>
                             <div class="pi-text">
@@ -49,10 +50,33 @@ export default {
   },
   data() {
       return {
-          products: []
+          products: [],
+      keranjangUser: []
       }
   },
+  methods: {
+      saveKeranjang(idProduct,productName,productPrice,productPhoto) {
+
+        let ProductStore = {
+            'id': idProduct,
+            'name': productName,
+            'price': productPrice,
+            'photo': productPhoto,
+        }
+
+        this.keranjangUser.push(ProductStore);
+        const parsed = JSON.stringify(this.keranjangUser);
+        localStorage.setItem('keranjangUser', parsed);
+    }
+  },
   mounted() {
+       if (localStorage.getItem('keranjangUser')) {
+            try {
+                this.keranjangUser = JSON.parse(localStorage.getItem('keranjangUser'));
+            } catch(e) {
+                localStorage.removeItem('keranjangUser');
+            }
+        }
       axios
       .get("http://shayna-backend.belajarkoding.com/api/products")
       .then(res => this.products = res.data.data.data)
